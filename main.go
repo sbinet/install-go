@@ -258,10 +258,10 @@ setenv PATH ${GOPATH}/bin:${PATH}
 func main() {
 	flag.Parse()
 	flag.Usage = func() {
-		fmt.Fprintf(os.Stderr, `atl-install-go installs the go-gc runtime.
+		fmt.Fprintf(os.Stderr, `install-go installs the go-gc runtime.
 Usage: 
 
-$ atl-install-go [options] <go-version>
+$ install-go [options] <go-version>
 `)
 		flag.PrintDefaults()
 	}
