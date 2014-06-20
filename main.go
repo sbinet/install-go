@@ -10,6 +10,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 )
 
 var g_odir = flag.String("o", "/afs/cern.ch/sw/lcg/contrib/go", "output directory where to install the go runtime")
@@ -211,6 +212,10 @@ func go_download(version string, platform [2]string) error {
 	}
 
 	goroot := filepath.Join(*g_odir, version, platform[0]+"_"+platform[1])
+	// dont hard-code references to the AFS rw-volume
+	if strings.HasPrefix(goroot, "/afs/.") {
+		goroot = strings.Replace(goroot, "/afs/.", "/afs/", 1)
+	}
 	return create_setup_files(goroot, platform)
 }
 
