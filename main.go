@@ -324,6 +324,17 @@ $ install-go [options] <go-version>
 		}
 	}
 
+	os.Remove(filepath.Join(*g_odir, "latest"))
+
+	err := os.Symlink(
+		version,
+		filepath.Join(*g_odir, "latest"),
+	)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "**error** %v\n", err)
+		os.Exit(1)
+	}
+
 	if !all_good {
 		os.Exit(1)
 	}
