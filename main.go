@@ -249,10 +249,10 @@ export PATH=${GOPATH}/bin:${PATH}
 	defer setup_csh.Close()
 	_, err = setup_csh.WriteString(fmt.Sprintf(`
 setenv GOROOT %s
-setenv PATH ${GROOT}/bin:${PATH}
+setenv PATH ${GOROOT}/bin:${PATH}
 setenv GOPATH ${HOME}/dev/gocode
 setenv PATH ${GOPATH}/bin:${PATH}
-`))
+`, goroot))
 	if err != nil {
 		return err
 	}
