@@ -13,9 +13,12 @@ import (
 	"strings"
 )
 
-var g_odir = flag.String("o", "/afs/cern.ch/sw/lcg/contrib/go", "output directory where to install the go runtime")
-var g_verbose = flag.Bool("v", false, "enable verbose printouts")
-var g_mode = flag.String("mode", "curl", "which mode to use (go|curl)")
+var (
+	g_odir    = flag.String("o", "/afs/cern.ch/sw/lcg/contrib/go", "output directory where to install the go runtime")
+	g_verbose = flag.Bool("v", false, "enable verbose printouts")
+	g_mode    = flag.String("mode", "curl", "which mode to use (go|curl)")
+	g_archs   = flag.String("archs", "linux-amd64", "comma-separated list of architectures to install (e.g: linux-amd64,linux-386)")
+)
 
 const (
 	url_tmpl = "http://golang.org/dl/go%s.%s-%s.tar.gz"
@@ -282,9 +285,23 @@ $ install-go [options] <go-version>
 		os.Exit(1)
 	}
 
-	platforms := [][2]string{
-		{"linux", "amd64"},
-		{"linux", "386"},
+	platforms := make([][2]string, 0, 1)
+	for _, arch := range strings.Split(*g_archs, ",") {
+		arch = strings.TrimSpace(arch)
+		if arch == "" {
+			continue
+		}
+		v := strings.Split(arch, "-")
+		if len(v) <= 0 || len(v) > 2 {
+			fmt.Fprintf(os.Stderr, "**error** invalid platform: %q\n", arch)
+			os.Exit(1)
+		}
+		platforms = append(platforms, [2]string{v[0], v[1]})
+	}
+	if len(platforms) <= 0 {
+		fmt.Fprintf(os.Stderr, "**error** no platform to install\n")
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	type download_fct func(version string, platform [2]string) error
@@ -297,6 +314,7 @@ $ install-go [options] <go-version>
 		download = go_download
 	default:
 		fmt.Fprintf(os.Stderr, "**error** invalid download mode (%s)\n", *g_mode)
+		os.Exit(1)
 	}
 
 	all_good := true
